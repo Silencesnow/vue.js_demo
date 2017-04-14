@@ -19,7 +19,24 @@
 <div id='app-03' v-bind:style='{color:activeColor,fontSize:fontSize + "px"}'>
 <p>1111</p>
 </div>
-<mycom></mycom>
+<div id="app-04">
+	<template v-if="ok">
+	<h1>Title</h1>
+	<p>Para</p>
+	</template>
+	<p v-else>No</p>
+</div>
+<div id="app-05">
+<template v-if="loginType==='username'">
+	<label>Username</label>
+	<input placeholder="Enter your username" key="username">
+</template>	
+<template v-else>
+	<label>Email</label>
+	<input placeholder="Enter your email address" key="email">
+</template>
+<button v-on:click="toggle">Toggle login type</button>
+</div>
 <script>
 
 	var app01=new Vue({
@@ -52,8 +69,23 @@
 			fontSize:30
 		}
 	})
-	Vue.component('mycom',{
-		template:'111'
+	var app04=new Vue({
+		el:'#app-04',
+		data:{
+			ok:true
+		}
+	})
+	var app05=new Vue({
+		el:'#app-05',
+		data:{
+			loginType:'username'
+		},
+		methods:{
+			toggle:function(){
+				this.loginType==='username'?this.loginType='email':this.loginType='username'
+			}
+		}
+
 	})
 </script>	
 </body>
