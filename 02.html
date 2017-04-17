@@ -60,6 +60,17 @@
 <ul id="app-11">
 	<li v-for="n in evenNumbers(numbers)">{{n}}</li>
 </ul>
+<div id="app-12">
+	<button v-on:click="counter+=1">增加1</button>
+	<p>这个按钮被点击了{{counter}}次</p>
+</div>
+<div id="app-13">
+	<button v-on:click="say('hi')">1</button>
+	<button v-on:click="say('what')">2</button>
+</div>
+<div id="app-14">
+	<button v-on:click="mod('event is modified',$event)">111</button>
+</div>
 <script>
 	var app01=new Vue({
 		el:'#app-01',
@@ -178,6 +189,32 @@
 				return this.numbers.filter(function(number){
 					return number%2 === 0
 				})
+			}
+		}
+	})
+	var app12=new Vue({
+		el:"#app-12",
+		data:{
+			counter:0
+		}
+	})
+	var app13=new Vue({
+		el:'#app-13',
+		data:{
+			message:'new event!'
+		},
+		methods:{
+			say:function(m){
+				alert(m)
+			}
+		}
+	})
+	var app14=new Vue({
+		el:'#app-14',
+		methods:{
+			mod:function(message,e){
+				alert(e.type)
+				alert(message)
 			}
 		}
 	})
