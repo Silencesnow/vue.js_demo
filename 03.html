@@ -43,12 +43,16 @@
 	<span>picked:{{picked}}</span>
 </div>
 <div id="app-6">
-	<select multiple="multiple" v-model="selected">
-		<option value="A">A</option>
-		<option value="B">B</option>
-		<option value="C">C</option>
+	<select v-model.lazy="selected">
+		<option v-for="option in options">{{option.text}}</option>
 	</select>
 	<span>selected:{{selected}}</span>
+</div>
+<div id="app-7">
+	<input id="bindvalue" type="checkbox" v-model.lazy="toggle" v-bind:true-value="a" v-bind:false-value='b'>
+	<label for="bindvalue">{{toggle}}</label>
+	<input type="text" v-model='age' id='Age'>
+	<label for="Age">{{age}}</label>
 </div>
 <script>
 var app1=new Vue({
@@ -87,7 +91,22 @@ var app05=new Vue({
 var app06=new Vue({
 	el:'#app-6',
 	data:{
-		selected:[]
+		selected:'A',
+		options:[
+		{text:'One',value:'A'},
+		{text:'Two',value:'B'},
+		{text:'Tree',value:'C'}
+		]
+	}
+})
+var app07=new Vue({
+	el:'#app-7',
+	data:{
+		toggle:'false',
+			a:'true',
+		    b:'false',
+		pick:''	,
+		age:''	
 	}
 })
 </script>	
