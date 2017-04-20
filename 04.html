@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-04</title>
+	<script src="vue/vue.js"></script>
+	<style>
+	
+	</style>
+</head>
+<body>
+<table id="app-01">
+	<tr is="my-component"></tr>
+</table>
+<div id="app-02">
+	<simple-counter></simple-counter>
+	<simple-counter></simple-counter>
+	<simple-counter></simple-counter>
+</div>
+<div id="app-03">
+	<input type="text" v-model='parentMsg'>
+	<child-11 v-bind:my-message="parentMsg"></child-11>
+</div>
+<div id="app-04">	
+	<child prop-c="111"></child><br>
+	<child prop-c="333" prop-d="222"></child>
+</div>
+<script>
+var app01=new Vue({
+	el:'#app-01',
+	components:{
+		'my-component':{
+			template:'<div>A custom component!</div>'
+		}
+	}
+})
+var app02=new Vue({
+	el:'#app-02',
+	components:{
+		'simple-counter':{
+			template:'<button v-on:click="counter +=1">{{counter}}</button>',
+			data:function(){
+					return {counter:0}
+				}
+		}		
+	}
+})
+var app03=new Vue({
+	el:'#app-03',
+	components:{
+		'child-11':{
+			template:'<span>{{myMessage}}</span>',
+			props:['myMessage']
+		}
+	},
+	data:{
+		parentMsg:''
+	}
+})
+var app04=new Vue({
+	el:'#app-04',
+	components:{
+		'child':{
+			template:'<span>{{propC}}-{{propD}}-{{propE}}</span>',
+			props:{
+				propC:{
+					type:String,
+					required:true
+				},
+				propD:[String,Number],
+				propE:{
+					type:[String,Number],
+					default:100
+				}
+			}
+		}
+	}
+})
+</script>	
+</body>
+</html>
