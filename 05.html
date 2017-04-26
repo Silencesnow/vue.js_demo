@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-05</title>
+	<script src="vue/vue.js"></script>
+</head>
+<body>
+<div id="app-01" >
+  <component-a></component-a>   
+</div>	
+<div id="app-02">
+  <component-b v-model='d_count'>{{d_count}}</component-b>
+  <span>{{d_count}}</span>
+</div>
+<parent-component id="app-03"></parent-component>
+<parent-list id="app-04" v-bind:mylist="mylist"></parent-list>
+<text1 id="app-05" v-bind:message="message"></text1>
+<br>
+<keep-alive><component id="app-06" v-bind:is="currentView"></component></keep-alive>
+<script>
+var bus=new Vue()
+var app01=new Vue({
+  el:'#app-01',
+  components:{
+    'component-a':{
+      template:'<button v-on:click="increment">{{count}}</button>',
+      data:function(){
+        return {count:0}
+      },
+      methods:{
+        increment:function(){
+          this.count+=1
+          bus.$emit('busEvent',this.count)
+        }
+      }      
+    }
+  }  
+})
+var app02=new Vue({
+  el:'#app-02',
+  data:{
+    d_count:0
+  },
+  components:{
+    'component-b':{
+      template:'<button>111-{{d_count}}</button>',
+      props:['d_count'],
+      mounted:function(){
+        bus.$on('busEvent',function(i){
+          return this.d_count=i
+        })
+      }
+    }
+  }   
+})	
+
+Vue.component('child',{
+  template:'<div><slot text="hello from child"></slot></div>'
+})
+var app03=new Vue({
+  el:'#app-03',
+  components:{
+    'parent-component':{
+      template:'<div>\
+      <child>\
+      <template scope="props">\
+      <span>hello from parent</span>\
+      <span>{{props.text}}</span>\
+      </template>\
+      </child></div>'
+    }
+  }
+})
+Vue.component('child-list',{
+  props:['mylist'],
+  template:'<ul><slot name="item" v-for="item in mylist" v-bind:text="item.text"></slot></ul>'
+  
+})
+var app04=new Vue({
+  el:'#app-04',
+  data:{
+    mylist:[
+      {text:'蔬菜'},
+      {text:'水果'},
+      {text:'肉'}
+    ]
+  },
+  components:{
+    'parent-list':{
+      props:['mylist'],
+      template:'<child-list v-bind:mylist="mylist">\
+      <template slot="item" scope="props">\
+      <li>{{props.text}}</li>\
+      </template>\
+      </child-list>'
+    }
+  }
+})
+Vue.component('text1',{
+  props:['message'],
+  template:'<span>{{message}}</span>'
+})
+var app05=new Vue({
+  el:'#app-05',
+  data:{
+    message:'hello11'
+  }
+})
+var home={
+  template:'<span>home</span>'
+}
+var app06=new Vue({
+  el:'#app-06',
+  data:{
+    currentView:'archive'
+  },
+  components:{
+    'posts':{
+      template:'<span>posts</span>'
+    },
+    archive:{
+      template:'<span>archive</span>'
+    }
+  }
+})
+</script>
+</body>
+</html>
