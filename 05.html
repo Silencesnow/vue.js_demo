@@ -18,6 +18,9 @@
 <text1 id="app-05" v-bind:message="message"></text1>
 <br>
 <keep-alive><component id="app-06" v-bind:is="currentView"></component></keep-alive>
+<div id="app-07">
+  <recursion-component :count="0"></recursion-component>
+</div>
 <script>
 var bus=new Vue()
 var app01=new Vue({
@@ -123,6 +126,21 @@ var app06=new Vue({
       template:'<span>archive</span>'
     }
   }
+})
+Vue.component('async-example',function(resolve,reject){
+  setTimeout(function(){
+    resolve({
+      template:'<div>I am async!</div>'
+    })
+  },1000)
+})
+Vue.component('recursion-component',{
+  props:['count'],
+  name:'count',
+  template:'<div><span>{{count}}</span><recursion-component :count="count+1" v-if="count<10"></recursion-component></div>'
+})
+var app07=new Vue({
+  el:'#app-07',
 })
 </script>
 </body>
