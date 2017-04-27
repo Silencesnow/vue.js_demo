@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>task-05</title>
 	<script src="vue/vue.js"></script>
+  
 </head>
 <body>
 <div id="app-01" >
@@ -21,6 +22,18 @@
 <div id="app-07">
   <recursion-component :count="0"></recursion-component>
 </div>
+<div id="app-08">
+  <tree-folder :folder="folder"></tree-folder>
+</div>
+<div id="app-09">
+  <parent-com><span>啦啦啦</span></parent-com>
+</div>
+<div id="app-10">
+  <hello-world></hello-world>
+</div>
+<script type="text/x-template" id="hello-world-template">
+  <p>Hello hello hello</p>
+</script>
 <script>
 var bus=new Vue()
 var app01=new Vue({
@@ -141,6 +154,50 @@ Vue.component('recursion-component',{
 })
 var app07=new Vue({
   el:'#app-07',
+})
+Vue.component('tree-folder',{
+  template:'<p><span>{{folder.name}}</span><tree-folder-contents :children="folder.children"/></p>',
+  props:['folder']
+})
+Vue.component('tree-folder-contents',{
+  template:'<ul><li v-for="child in children">\
+  <tree-folder v-if="child.children" :folder="child"/>\
+  <span v-else>{{child.name}}</span>\
+  </li></ul>',
+  props:['children']
+})
+var app08=new Vue({
+  el:'#app-08',
+  data:{
+    folder:{
+      name:'总目录',
+      children:[
+        {name:"二层目录1"},
+        {name:"二层目录2",
+          children:[
+          {name:"三层目录1"},
+          {name:"三层目录1"}
+          ]
+        },
+        {name:'二层目录3'}
+      ]
+    }
+  }
+})
+Vue.component('child-com',{
+  template:'<div><span>this is from child</span><slot></slot></div>'
+})
+Vue.component('parent-com',{
+  template:'<div><child-com><span>this is part of parents</span></child-com></div>'
+})
+var app09=new Vue({
+  el:'#app-09'
+})
+Vue.component('hello-world', {
+  template: '#hello-world-template'
+})
+var app10=new Vue({
+  el:'#app-10'
 })
 </script>
 </body>
