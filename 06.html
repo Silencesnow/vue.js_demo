@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-06</title>
+	<script src="vue/vue.js"></script>
+  <style>
+    .fade-enter-active,.fade-leave-active{
+      transition: opacity 3s;
+    }
+    .fade-enter, .fade-leave-active{
+      opacity: 0
+    }
+    .bounce-enter-active{
+      animation: bounce-in 3s
+    }
+    p{
+      background-color: red
+    }
+    @keyframes bounce-in{
+      0%{
+        transform: scale(0)
+      }
+      100%{
+        transform: scale(1)
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="app-01">
+  <button v-on:click="show=!show">toggle</button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition> 
+</div>
+<div id="app-02">
+  <button v-on:click="show=!show">toggle</button>
+  <transition name="bounce">
+    <p v-if="show">look at me</p>
+  </transition> 
+</div>
+<script>
+var app01=new Vue({
+  el:'#app-01',
+  data:{
+    show:true
+  }
+})
+var app02=new Vue({
+  el:'#app-02',
+  data:{
+    show:true
+  }
+})
+</script>
+</body>
+</html>
