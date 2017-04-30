@@ -3,6 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>task-06</title>
+  <link href="https://unpkg.com/animate.css@3.5.1/animate.min.css" rel="stylesheet" type="text/css">
+  <script src="vue/velocity.min.js"></script>
 	<script src="vue/vue.js"></script>
   <style>
     .fade-enter-active,.fade-leave-active{
@@ -14,18 +16,65 @@
     .bounce-enter-active{
       animation: bounce-in 3s
     }
+    .bounce-leave-active{
+      animation: bounce-out 3s
+    }
     p{
-      background-color: red
+      background-color: red;
+      width:50%;
     }
     @keyframes bounce-in{
       0%{
         transform: scale(0)
       }
+      50%{
+        transform:scale(1.5)
+      }
       100%{
         transform: scale(1)
       }
     }
+    @keyframes bounce-out{
+      0%{
+        transform: scale(1)
+      }
+      50%{
+        transform:scale(1.5)
+      }
+      100%{
+        transform: scale(0)
+      }
+    }
+    .custom-appear-class{
+    font-size: 40px;
+    color: red;
+    background: green;
+}
+
+.custom-appear-active-class{
+    background: green;
+}
+
+.try-enter-active{
+  animation: move_in 1s; 
+ } 
+ @keyframes move_in{
+  from{left:150px;opacity: 0}
+  to{left:100px;opacity: 1}
+ }
+ .try-leave-active{
+  animation:move_out 1s;
+ }
+ @keyframes move_out{
+  from{left:100px;opacity: 1}
+  to{left:50px;opacity: 0}
+ }
+ #app-04 button{
+  position: absolute;
+  left:100px;
+ }
   </style>
+
 </head>
 <body>
 <div id="app-01">
@@ -36,9 +85,31 @@
 </div>
 <div id="app-02">
   <button v-on:click="show=!show">toggle</button>
-  <transition name="bounce">
+  <transition name="bounce" 
+  enter-active-class="animated tada"
+  leave-active-class="animated bounceOutRight">
     <p v-if="show">look at me</p>
   </transition> 
+</div>
+<div id="app-03">
+  <button v-on:click="show=!show">toggle</button>
+  <transition
+  appear
+  appear-class="custom-appear-class"
+  appear-active-class="custom-appear-active-class"
+>
+    <p v-if="show">demo</p>
+  </transition> 
+</div>
+<div id="app-04">
+<button v-on:click="isEditing=!isEditing">toggle</button>
+<br>
+  <transition name="try" mode="in-out">
+    <button v-if="isEditing" key="save">
+      in
+    </button>
+    <button v-else key="edit">out</button>
+  </transition>
 </div>
 <script>
 var app01=new Vue({
@@ -51,6 +122,40 @@ var app02=new Vue({
   el:'#app-02',
   data:{
     show:true
+  }
+})
+var app03=new Vue({
+  el:'#app-03',
+  data:{
+    show:false
+  },
+  methods:{
+    beforeEnter:function(el){
+      
+      el.style.transformOrigin='left'
+    },
+    enter:function(el,done){
+      Velocity(el,
+        {fontSize:'1.4em'},
+        {duration:300})
+      Velocity(el,{fontSize:'1em'},{complete:done})
+    },
+    leave:function(el,done){
+      Velocity(el,{translateX:'15px',rotateZ:'50deg'},{duration:600})
+      Velocity(el,{rotateZ:'100deg'},{loop:2})
+      Velocity(el,{
+        rotateZ:'45deg',
+        translateX:'30px',
+        translateY:'30px',
+        opacity:0
+      },{complete:done})
+    }
+  }
+})
+var app04=new Vue({
+  el:'#app-04',
+  data:{
+    isEditing:true
   }
 })
 </script>
