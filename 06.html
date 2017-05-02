@@ -121,10 +121,11 @@
  .shuffle-table-move{
   transition: transform 1s;
  }
- .staggered-fade-move{
-  transition: transform 1s;
- }
+#app-10 p{
+  background-color: white;
+}
   </style>
+
 
 </head>
 <body>
@@ -148,6 +149,16 @@
   appear
   appear-class="custom-appear-class"
   appear-active-class="custom-appear-active-class"
+>
+    <p v-if="show">demo</p>
+  </transition> 
+</div>
+<div id="app-031">
+  <button v-on:click="show=!show">toggle</button>
+  <transition
+  v-on:before-enter="beforeEnter"
+  v-on:enter="enter"
+  v-on:leave="leave"
 >
     <p v-if="show">demo</p>
   </transition> 
@@ -197,10 +208,18 @@
 </div>
 <div id="app-09">
   <input type="text" v-model="query">
-  <transition-group name="staggered-fade" tag="ul" v-bind:css="false" v-bind:before-enter="beforeEnter" v-bind:enter="enter" v-bind:leave="leave"
+  <transition-group name="staggered-fade" tag="ul" v-bind:css="false" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:leave="leave"
     >
     <li v-for="(item,index) in computedList" v-bind:key="item.msg" v-bind:data-index="index">{{item.msg}}</li>
     </transition-group>
+</div>
+<div id="app-10">
+  Fade In<input type="range" v-model="fadeInDuation" min="0" v-bind:max="maxFadeDuration">
+  Fade Out<input type="range" v-model="fadeOutDuation" min="0" v-bind:max="maxFadeDuration">
+  <transition v-bind:css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave">
+  <p v-if="show">hello</p>
+  </transition>
+  <button @click="stop=true">Stop it!</button>
 </div>
 <script>
 var app01=new Vue({
@@ -355,15 +374,54 @@ var app09=new Vue({
   },
   methods:{
     beforeEnter:function(el){
-      
+      el.style.opacity=0
+      el.style.height=0
     },
     enter:function(el,done){
-       
+      var delay=el.dataset.index*150
+      setTimeout(function(){
+        Velocity(el,{opacity:1,height:'1.6em'},{complete:done})
+      },delay)
  
     },
     leave:function(el,done){
-        
+       var delay=el.dataset.index*150
+      setTimeout(function(){
+        Velocity(el,{opacity:0,height:0},{complete:done})
+      },delay) 
     
+    }
+  }
+})
+var app10=new Vue({
+  el:'#app-10',
+  data:{
+    show:true,
+    fadeInDuation:3000,
+    fadeOutDuation:3000,
+    maxFadeDuration:5000,
+    stop:false
+  },
+  mounted:function(){
+    this.show=false
+  },
+  methods:{
+    beforeEnter:function(el){
+      el.style.opacity=0
+    },
+    enter:function(el,done){
+      var vm=this
+      Velocity(el,{opacity:1,color:'#17a05e'},{duration:vm.fadeInDuation,complete:function(){
+        done()
+        vm.show=false
+      }})
+    },
+    leave:function(el,done){
+      var vm=this
+      Velocity(el,{opacity:0,color:'#fb9b0c'},{duration:vm.fadeOutDuation,complete:function(){
+        done()
+        vm.show=true
+      }})
     }
   }
 })
