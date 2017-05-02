@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-07</title>
+  <script src="vue/tween.js"></script>
+  <script src="vue/velocity.min.js"></script>
+  <script src="vue/vue.js"></script>
+	
+  <style>
+    
+  </style>
+</head>
+<body>
+<div id="app-01">
+  <input type="number" v-model.number="number" step="20">
+  <p>{{animatedNumber}}</p>
+</div>
+<script>
+var app01=new Vue({
+  el:'#app-01',
+  data:{
+    number:0,
+    animatedNumber:0
+  },
+  watch:{
+    number:function(newValue,oldValue){
+      var vm=this
+      function animate(time){
+        requestAnimationFrame(animate)
+        TWEEN.update(time)
+      }
+      new TWEEN.Tween({tweeningNumber:oldValue})
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .to({tweeningNumber:newValue},1000)
+      .onUpdate(function(){
+        vm.animatedNumber=this.tweeningNumber.toFixed(0)
+      })      
+      .start()
+      animate()
+    }
+  }
+})
+</script>
+</body>
+</html>
