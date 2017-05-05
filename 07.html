@@ -4,17 +4,65 @@
 	<meta charset="UTF-8">
 	<title>task-07</title>
   <script src="vue/tween.js"></script>
-  <script src="vue/velocity.min.js"></script>
+  <script src="vue/TweenLite.min.js"></script>
+  <script src="vue/color.js"></script>
   <script src="vue/vue.js"></script>
 	
   <style>
-    
+   #app-02 span{
+    display: block;
+    width:100px;
+    height: 100px;
+   } 
+   #app-03 svg,#app-03 input{
+    display: block;
+   }
+   #app-03 polygon{
+    fill:#41b883;
+   }
+   #app-03 circle{
+    fill:transparent;
+    stroke: #35495e;
+   }
+   #app-03 input{
+    width: 90%;
+    margin-bottom: 15px;
+   }
   </style>
 </head>
 <body>
 <div id="app-01">
   <input type="number" v-model.number="number" step="20">
   <p>{{animatedNumber}}</p>
+</div>
+<div id="app-02">
+  <input v-model="colorQuery" v-on:keyup.enter="updateColor" placeholder="Enter a color">
+  <button v-on:click="updateColor">Update</button>
+  <p>Preview:</p>
+  <span v-bind:style="{backgroundColor:tweenedCSSColor}"></span>
+  <p>{{tweenedCSSColor}}</p>
+</div>
+<div id="app-03">
+  <svg width="200" height="200">
+    <polygon v-bind:points="points"></polygon>
+    <circle cx="100" cy="100" r="90"></circle>
+  </svg>
+    <label>Sides: {{sides}}</label>
+    <input type="range" min="3"  max="500" v-model.number="sides">
+    <label>Minimum Radius: {{minRadius}}%</label>
+    <input type="range" min="0"  max="90" v-model.number="minRadius">
+    <label>Update Interval: {{updateInterval}} milliseconds</label>
+    <input type="range" min="10"  max="2000" v-model.number="updateInterval"> 
+</div>
+<div id="app-04">
+  <input type="number" v-model.number="firstNumber" step="20">+
+  <input type="number" v-model.number="secondNumber" step="20">=
+  {{result}}
+  <p>
+    <animated-integer v-bind:value="firstNumber"></animated-integer>
+    <animated-integer v-bind:value="secondNumber"></animated-integer>
+    <animated-integer v-bind:value="result"></animated-integer>
+  </p>
 </div>
 <script>
 var app01=new Vue({
@@ -38,6 +86,178 @@ var app01=new Vue({
       })      
       .start()
       animate()
+    }
+  }
+})
+var Color=net.brehaut.Color
+var app02=new Vue({
+  el:'#app-02',
+  data:{
+    colorQuery:'',
+    color:{
+      red:0,
+      green:0,
+      blue:0,
+      alpha:1
+    },
+    tweenedColor:{
+      red:0,
+      green:0,
+      blue:0,
+      alpha:1
+    }
+  },
+  watch:{
+    color:function(){
+      function animate(time){
+        requestAnimationFrame(animate)
+        TWEEN.update(time)
+      }
+      new TWEEN.Tween(this.tweenedColor)
+      .to(this.color,750)
+      .start()
+      animate()
+    }
+  },
+  computed:{
+    tweenedCSSColor:function(){
+      return new Color({
+        red:this.tweenedColor.red,
+        green:this.tweenedColor.green,
+        blue:this.tweenedColor.blue,
+        alpha:this.tweenedColor.alpha
+      }).toCSS()
+    }
+
+  },
+  methods:{
+    updateColor:function(){
+      this.color=new Color(this.colorQuery).toRGB()
+      this.colorQuery=''
+    }
+  }
+  
+})
+var app03=new Vue({
+  el:'#app-03',
+  data:function(){
+    var defaultSides=10
+    var stats=Array.apply(null,{length:defaultSides}).map(function(){return 100})
+    return {
+      stats:stats,
+      points:generatePoints(stats),
+      sides:defaultSides,
+      minRadius:50,
+      interval:null,
+      updateInterval:500
+    }
+  },
+  watch:{
+    sides:function(newSides,oldSides){ 
+    var sidesDifference = newSides - oldSides
+      if (sidesDifference > 0) {
+          this.stats.push(this.newRandomValue())       
+      } else {
+          this.stats.shift()  
+      }
+    },
+    stats:function(newStats){
+      TweenLite.to(
+        this.$data,
+        this.updateInterval/1000,
+        {points:generatePoints(newStats)})
+    },
+    updateInterval:function(){
+      this.resetInterval()
+    }
+  },
+  mounted:function(){
+    this.resetInterval()
+  },
+  methods:{
+    randomizeStats:function(){
+      var vm=this
+      this.stats=this.stats.map(function(){
+        return vm.newRandomValue()
+      })
+    },
+    newRandomValue:function(){
+      return Math.ceil(this.minRadius+Math.random()*(100-this.minRadius))
+    },
+    resetInterval:function(){
+      var vm=this
+      clearInterval(this.interval)
+      this.randomizeStats()
+      this.interval=setInterval(function(){
+        vm.randomizeStats()
+      },this.updateInterval)
+    }
+  }
+})
+function valueToPoint(value,index,total){
+  var x=0,y=-value*0.9,angle=Math.PI*2/total*index,cos=Math.cos(angle),sin=Math.sin(angle),tx=x*cos-y*sin+100,ty=x*sin+y*cos+100
+  return {x:tx,y:ty}
+}     
+function generatePoints(stats){
+  var total=stats.length
+  return stats.map(function(stat,index){
+    var point=valueToPoint(stat,index,total)
+    return point.x+','+point.y   
+  }).join(' ')
+}
+Vue.component('animated-integer',{
+  template:'<span>{{tweeningValue}}</span>',
+  props:{
+    value:{
+      type:Number,
+      required:true
+    }
+  },
+  data:function(){
+     tweeningValue=this.value
+    return {tweeningValue}
+  },
+  watch:{
+    value:function(newValue,oldValue){
+      this.tweenLite1(oldValue,newValue)
+    }
+  },
+  methods:{
+    tween:function(startValue,endValue){
+      var vm=this
+      function animate(time){
+        requestAnimationFrame(animate)
+        TWEEN.update(time)
+      }
+      new TWEEN.Tween({tweeningValue:startValue})
+      .to({tweeningValue:endValue},500)
+      .onUpdate(function(){
+        
+        vm.tweeningValue=this.tweeningValue.toFixed(0)
+        console.log(vm.tweeningValue)
+      })
+      .start()
+      animate()
+    },
+    tweenLite1:function(startValue,endValue){
+      var vm=this
+      TweenLite.to(this.$data,1,{tweeningValue:endValue,onUpdate:conInteger})
+      function conInteger(){    
+      vm.tweeningValue=this.tweeningValue.toFixed(0)  
+
+      }
+    }
+  }
+})
+var app04=new Vue({
+  el:'#app-04',
+  data:{
+    firstNumber:20,
+    secondNumber:40
+  },
+  computed:{
+    result:function(){
+      return this.firstNumber+this.secondNumber
     }
   }
 })
