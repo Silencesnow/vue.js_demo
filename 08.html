@@ -10,14 +10,54 @@
 </head>
 <body>
 <div id="app-01">
-  <anchored-heading :level="1">Hello world!</anchored-heading>
+  <anchored-heading :level="1">
+  hello world
+  </anchored-heading>
+  <component-vif :items="items"></component-vif>
+  <component-vmodel :orivalue="value"></component-vmodel>
 </div>
 <script>
-var getChildrenTextContent=function (children){
+function getChildrenTextContent(children){
   return children.map(function(node){
     return node.children?getChildrenTextContent(node.children):node.text
   }).join('')
 }
+Vue.component('component-vif',{
+  props:["items"],
+  render:function(createElement){
+    if(this.items.length){
+      return createElement('ul',this.items.map(function(item){
+        return createElement('li',item.name)
+      }))
+    } else{
+      return createElement('p','No items found.')
+    }
+  }
+})
+Vue.component('component-vmodel',{
+  render:function(createElement){
+    var self=this
+    return createElement('p',[
+      createElement('input',{
+        domProps:{
+          value:self.value,
+         
+        },
+      on:{
+        input:function(event){
+          self.value=event.target.value
+        }
+      }
+      }),
+      createElement('span',self.value)
+    ])    
+  },
+  props:['orivalue'],
+  data:function(){
+    var value=this.orivalue
+    return {value}
+  }
+})
 Vue.component('anchored-heading',{
   render:function(createElement){
     var headingId=getChildrenTextContent(this.$slots.default)
@@ -28,12 +68,7 @@ Vue.component('anchored-heading',{
     return createElement(
       'h'+this.level,
       [
-      createElement('a',{
-        attrs:{
-          name:headingId,
-          href:'#'+headingId
-        }
-      },this.$slots.default)
+      createElement('a',{attrs:{name:headingId,href:'#'+headingId}},this.$slots.default)
       ]
       )
   },
@@ -47,7 +82,12 @@ Vue.component('anchored-heading',{
 var app01=new Vue({
   el:'#app-01',
   data:{
-    level:''
+    level:'1',
+    items:[
+      {name:'aaa'},
+      {name:'bbb'}
+    ],
+    value:''
   }
 })
 
