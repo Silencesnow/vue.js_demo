@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-09</title>
+  <script src="vue/vue.js"></script>	
+  <style>
+   
+  </style>
+</head>
+<body>
+<div id="app-01">
+	<com-keymod >
+		<com-keymod></com-keymod>
+	</com-keymod>
+</div>
+<div id="app-02">
+<span>hello i'm parent text</span>
+<br>
+	<com-02>
+	<p slot="foo">hello i'm parent text in child</p>		
+	</com-02>
+	<com-03>
+		<com-04></com-04>
+	</com-03>
+</div>
+<script>
+Vue.component('com-keymod',{
+	render:function(createElement){
+		var vm=this
+		return createElement(
+			'div',
+			{
+				on:{
+					'!click':this.doThisInCapturingMode,
+					'~mouseover':this.doThisOnceInCapturingModeOver,
+					'~mouseleave':this.doThisOnceInCapturingModeLeave
+				}
+			},
+			[
+			createElement('input',{
+				on:{
+					keyup:function(event){
+						if(event.target!==event.currentTarget) 
+							this.value=1
+						if(!event.shiftKey||event.keyCode!==13)
+							this.value=2
+					}
+				}
+			}),
+			vm.value,
+			this.$slots.default
+			]
+		)
+	},
+	data:function(){
+		return {value:0}
+	},
+	methods:{
+		doThisInCapturingMode:function(){
+			this.value=3			
+		},
+		doThisOnceInCapturingModeOver:function(){
+			this.value+=1
+		},
+		doThisOnceInCapturingModeLeave:function(){
+			this.value-=1
+		}
+	}
+})
+Vue.component('com-02',{
+	// template:'<div><slot name="foo"></slot></div>'	
+	render:function(createElement){
+		return createElement('div',this.$slots.foo)
+	}
+})
+Vue.component('com-04',{
+	// template:'<div><slot :text="msg"></slot></div>'
+	render:function(createElement){
+		return createElement('div',[
+			this.$scopedSlots.default({
+				text:this.msg
+			})])
+	}
+})
+Vue.component('com-03',{
+	// template:'<child><template scope="props"><span>{{props.text}}</span></template></child>'
+	render:function(createElement){
+		return createElement('com-04',{
+			scopedSlots:{
+				default:function(props){
+					return createElement('span',props.text)
+				}
+			}
+		})
+	}
+})
+var app01=new Vue({
+	el:'#app-01'
+})
+var app02=new Vue({
+	el:'#app-02'
+})
+</script>
+</body>
+</html>
