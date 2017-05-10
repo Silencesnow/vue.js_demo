@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-10</title>
+  <script src="vue/vue.js"></script>	
+  <style>
+   
+  </style>
+</head>
+<body>
+<div id="app-01">
+<smart-list :items="list"></smart-list>
+</div>
+<script>
+var EmptyList="hello im em",
+    TabelList=[
+      "111",
+      "222",
+      "333"
+      ],
+    OrderedList=[
+      "aaa",
+      "bbb",
+      "ccc"
+      ],
+    UnorderedList=[
+      "ddd",
+      "eee",
+      "fff"
+      ]
+Vue.component('smart-list',{
+  functional:true,
+  render:function(createElement,context){
+    function app(){
+      var items=context.props.items
+          
+      if(items.length===0) return EmptyList
+      if(typeof items[0]==='object') return TabelList
+      if(context.props.isOrdered) return OrderedList
+      return UnorderedList
+    }
+  
+  return createElement(
+    'ul',
+    app(),
+    context.data,
+    context.children
+    )
+  },
+  props:{
+    items:{
+      type:String,
+      required:true
+    },
+    isOrdered:Boolean
+  }
+})
+var app01=new Vue({
+  el:'#app-01',
+  data:{
+    list:[1,2,3]
+  }
+})
+function a(m){
+  alert(m)
+  console.log(m)
+}
+</script>
+</body>
+</html>
