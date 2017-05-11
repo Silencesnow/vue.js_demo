@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-11</title>
+  <script src="vue/vue.js"></script>	
+  <style>
+   
+  </style>
+</head>
+<body>
+<input  id="app-01" v-focus>111 
+<div id="app-02" v-swatch="{color:'#125678'}">111</div>
+<script>
+// Vue.directive('focus',{
+//   inserted:function(el){
+//     el.focus()
+//   }
+// }) 
+var app01=new Vue({
+  el:'#app-01',
+  directives:{
+    focus:{
+      inserted:function(el){
+        el.focus()
+      }
+    }
+  }
+})
+Vue.directive('swatch',function(el,binding){
+  el.style.backgroundColor=binding.value
+})
+var app02=new Vue({
+  el:'#app-02',
+  data:{
+    message:"hello"
+  },
+  directives:{
+    swatch:function(el,binding,v){
+      el.style.backgroundColor=binding.value.color   
+    }
+  }
+})
+
+</script>
+</body>
+</html>
