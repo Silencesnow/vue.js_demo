@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>task-12</title>
+  <script src="vue/vue.js"></script>	
+  <style>
+   
+  </style>
+</head>
+<body>
+<div id="app-01"></div>
+<script>
+var myMixin = {
+	myOption:function(){
+		console.log("hello from mixin!")
+		}	
+} 
+var customcom = Vue.extend({
+	mixins:[myMixin],	
+	myOption:function(){
+		console.log("hello from vue!")
+	}		
+})
+// var strategies=Vue.config.optionMergeStrategies
+//  strategies.myOption=function(toVal,fromVal){
+//  	return fromVal
+//  }
+var aaa=new customcom()
+
+aaa.$options.myOption()
+</script>
+</body>
+</html>
